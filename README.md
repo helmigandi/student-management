@@ -1,4 +1,6 @@
 
+## Deploy Link
+[http://studentmanagement-env.eba-rjtruhvf.ap-southeast-1.elasticbeanstalk.com/](http://studentmanagement-env.eba-rjtruhvf.ap-southeast-1.elasticbeanstalk.com/)
 
 ## Build without Docker
 
@@ -42,3 +44,8 @@ or
 # local
 ./mvnw clean install -P build-frontend -P jib-push-to-local -D app.image.tag=1
 ```
+
+## Terminate and Restore an Elastic Beanstalk
+
+- [Terminate](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.terminating.html)
+- [Restore](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-management-rebuild.html)
