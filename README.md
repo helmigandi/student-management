@@ -65,6 +65,20 @@ docker run --name postgres-server2 \
 docker run -it --rm --network=postgres-db postgres:alpine psql -h postgres-server2 -U postgres
 ```
 
+## Connect to RDS AWS Docker
+
+```bash
+docker run -it --rm postgres:alpine psql -h aa1kxcssm1gtat3.cg5xihpbjufz.ap-southeast-1.rds.amazonaws.com -U postgres -d postgres
+
+# -d postgres: Created database from AWS
+# -U postgres: Created user
+```
+
+## Spring Profiles
+```bash
+SPRING_PROFILES_ACTIVE=dev
+```
+
 ## Terminate and Restore an Elastic Beanstalk
 
 - [Terminate](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.terminating.html)
