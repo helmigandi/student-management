@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
-import {getAllStudents} from "./client";
-import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Badge, Avatar} from "antd";
+import {deleteStudent, getAllStudents} from "./client";
+import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Badge, Avatar, Radio, Popconfirm} from "antd";
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 import StudentDrawerForm from "./StudentDrawerForm";
 import "./App.css";
+import {successNotification} from "./Notification";
 
 const {Header, Content, Footer, Sider} = Layout;
 const {SubMenu} = Menu;
@@ -28,7 +29,7 @@ const TheAvatar = ({name}) => {
   return <Avatar>{`${name.charAt(0)}${name.charAt(name.length - 1)}`}</Avatar>
 }
 
-const columns = [
+const columns = fetchStudents => [
   {
     title: "",
     dataIndex: "",
@@ -50,7 +51,29 @@ const columns = [
     title: "Gender",
     dataIndex: "gender",
   },
+  {
+    title: 'Actions',
+    render: (text, student) =>
+      <Radio.Group>
+        <Popconfirm
+          placement='topRight'
+          title={`Are you sure to delete ${student.name}`}
+          onConfirm={() => removeStudent(student.id, fetchStudents)}
+          okText='Yes'
+          cancelText='No'>
+          <Radio.Button value="small">Delete</Radio.Button>
+        </Popconfirm>
+        <Radio.Button value="small">Edit</Radio.Button>
+      </Radio.Group>
+  }
 ];
+
+const removeStudent = (studentId, callback) => {
+  deleteStudent(studentId).then(() => {
+    successNotification( "Student deleted", `Student with ${studentId} was deleted`);
+    callback();
+  });
+}
 
 const antIcon = <LoadingOutlined style={{fontSize: 24}} spin/>;
 
@@ -89,7 +112,7 @@ function App() {
         />
         <Table
           dataSource={students}
-          columns={columns}
+          columns={columns(fetchStudents)}
           rowKey={(student) => student.id}
           bordered
           title={() =>
