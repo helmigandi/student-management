@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 import StudentDrawerForm from "./StudentDrawerForm";
 import "./App.css";
-import {successNotification} from "./Notification";
+import {errorNotification, successNotification} from "./Notification";
 
 const {Header, Content, Footer, Sider} = Layout;
 const {SubMenu} = Menu;
@@ -72,6 +72,13 @@ const removeStudent = (studentId, callback) => {
   deleteStudent(studentId).then(() => {
     successNotification( "Student deleted", `Student with ${studentId} was deleted`);
     callback();
+  }).catch((err) => {
+    err.response.json().then(res => {
+      errorNotification(
+        "There was an issue",
+        `${res.message} [${res.status}] [${res.error}]`
+      )
+    });
   });
 }
 
@@ -93,43 +100,61 @@ function App() {
       .then((data) => {
         setStudents(data);
         setFetching(false);
-      });
-  };
+      }).catch(err => {
+        console.log(err.response);
+        err.response.json().then(res => {
+          errorNotification(
+            "There was an issue",
+            `${res.message} [${res.status}] [${res.error}]`
+          )
+        })
+      }).finally(() => setFetching(false));
+  }
 
   const renderStudents = () => {
     if (fetching) {
-      return <Spin indicator={antIcon}/>;
+      return <Spin indicator={antIcon}/>
     }
     if (students.length <= 0) {
-      return <Empty/>;
-    }
-    return (
-      <>
+      return <>
+        <Button
+          onClick={() => setShowDrawer(!showDrawer)}
+          type="primary" shape="round" icon={<PlusOutlined/>} size="small">
+          Add New Student
+        </Button>
         <StudentDrawerForm
           showDrawer={showDrawer}
           setShowDrawer={setShowDrawer}
           fetchStudents={fetchStudents}
         />
-        <Table
-          dataSource={students}
-          columns={columns(fetchStudents)}
-          rowKey={(student) => student.id}
-          bordered
-          title={() =>
-            <>
-              <Button
-                onClick={() => setShowDrawer(!showDrawer)}
-                type="primary" shape="round" icon={<PlusOutlined/>} size="small">
-                Add New Student
-              </Button>
-              <Badge count={students.length} className="site-badge-count-4"/>
-            </>
-          }
-          scroll={{y: 240}}
-        />
+        <Empty/>
       </>
-    );
-  };
+    }
+    return <>
+      <StudentDrawerForm
+        showDrawer={showDrawer}
+        setShowDrawer={setShowDrawer}
+        fetchStudents={fetchStudents}
+      />
+      <Table
+        dataSource={students}
+        columns={columns(fetchStudents)}
+        bordered
+        title={() =>
+          <>
+            <Button
+              onClick={() => setShowDrawer(!showDrawer)}
+              type="primary" shape="round" icon={<PlusOutlined/>} size="small">
+              Add New Student
+            </Button>
+            <Badge count={students.length} className="site-badge-count-4"/>
+          </>
+        }
+        scroll={{y: 240}}
+        rowKey={student => student.id}
+      />
+    </>
+  }
 
   return (
     <Layout style={{minHeight: "100vh"}}>
